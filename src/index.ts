@@ -4,7 +4,7 @@ import z from 'zod';
 
 interface IRepo<T extends { id: number } = { id: number }> {
     retrieveAll: () => Promise<T[]>;
-    retrieveOne: (id: number) => Promise<T>;
+    retrieveOne: (id: number) => Promise<T | undefined>;
     create: (data: T) => Promise<T>;
     update: (patch: Partial<T>) => Promise<T>;
     delete: (id: number) => Promise<void>;
@@ -19,7 +19,7 @@ export class InMemoryRepo<T extends { id: number }> implements IRepo<T> {
     }
 
     async retrieveOne(id: number) {
-        return this.data[Number(id)];
+        return this.data.find((entry) => entry.id === id);
     }
 
     async create(data: T) {
@@ -54,6 +54,19 @@ export function zedr(options: { repository: IRepo; schema: z.ZodObject<any, any,
         try {
             const entries = await options.repository.retrieveAll();
             res.status(200).send(entries);
+        } catch (e) {
+            res.status(500).send({ message: _.get(e, 'message', 'Unknown Error') });
+        }
+    });
+
+    router.get('/:id', async (req, res) => {
+        const id = Number(req.params.id);
+        try {
+            const entry = await options.repository.retrieveOne(id);
+            if (!entry) {
+                res.status(404).send({ message: 'Not Found' });
+            }
+            res.status(200).send(entry);
         } catch (e) {
             res.status(500).send({ message: _.get(e, 'message', 'Unknown Error') });
         }

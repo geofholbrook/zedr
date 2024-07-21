@@ -21,7 +21,7 @@ describe('basic functionality (in-memory storage)', () => {
         expect(response.body).toMatchObject([]);
     });
 
-    test('should create and fetch an entity', async () => {
+    test('should create and fetch an entity (fetch all)', async () => {
         const response = await client.post('/').send({ name: 'foo' });
         expect(response.status).toBe(200);
         expect(response.body).toMatchObject({ name: 'foo' });
@@ -31,5 +31,17 @@ describe('basic functionality (in-memory storage)', () => {
         expect(fetchResponse.status).toBe(200);
         expect(fetchResponse.body).toHaveLength(1);
         expect(fetchResponse.body[0]).toMatchObject({ name: 'foo' });
+    });
+
+    test('should create and fetch an entity (fetch by id)', async () => {
+        const response = await client.post('/').send({ name: 'foo' });
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({ name: 'foo' });
+
+        const id = response.body.id;
+        const fetchResponse = await client.get(`/${id}`);
+        
+        expect(fetchResponse.status).toBe(200);
+        expect(fetchResponse.body).toMatchObject({ id, name: 'foo' });
     });
 });
