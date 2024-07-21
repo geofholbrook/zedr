@@ -1,18 +1,35 @@
 import express from 'express';
-import { zedr } from '../src';
+import { InMemoryRepo, zedr } from '../src';
 import supertest from 'supertest';
 import z from 'zod';
 
 describe('basic functionality (in-memory storage)', () => {
-    test('should return 200 with empty array', async () => {
-        const app = express();
-        app.use('/', zedr(z.object({ name: z.string() })));
+    const app = express();
+    app.use(
+        '/',
+        zedr({
+            repository: new InMemoryRepo(),
+            schema: z.object({ id: z.number().optional(), name: z.string() })
+        })
+    );
 
-        const client = supertest(app);
+    const client = supertest(app);
+
+    test('should return 200 with empty array', async () => {
         const response = await client.get('/');
-        expect(response).toMatchObject({
-            status: 200,
-            body: []
-        });
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject([]);
+    });
+
+    test('should create and fetch an entity', async () => {
+        const response = await client.post('/').send({ name: 'foo' });
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({ name: 'foo' });
+
+        const id = response.body.id;
+        const fetchResponse = await client.get('/');
+        expect(fetchResponse.status).toBe(200);
+        expect(fetchResponse.body).toHaveLength(1);
+        expect(fetchResponse.body[0]).toMatchObject({ name: 'foo' });
     });
 });
