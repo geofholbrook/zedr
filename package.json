@@ -30,7 +30,8 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testMatch": ["**/?(*.)+(spec|test).ts"]
   },
   "prettier": {
     "printWidth": 120,
