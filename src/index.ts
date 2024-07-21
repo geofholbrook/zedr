@@ -11,21 +11,21 @@ interface IRepo<T extends { id: number } = { id: number }> {
 }
 
 export class InMemoryRepo<T extends { id: number }> implements IRepo<T> {
-    private data: T[] = [];
+    private records: T[] = [];
     private sequence = 0;
 
     async retrieveAll() {
-        return this.data;
+        return this.records;
     }
 
     async retrieveOne(id: number) {
-        return this.data.find((entry) => entry.id === id);
+        return this.records.find(r => r.id === id);
     }
 
     async create(data: T) {
-        const newEntry = { ...data, id: ++this.sequence }
-        this.data.push(newEntry);
-        return newEntry;
+        const newRecord = { ...data, id: ++this.sequence }
+        this.records.push(newRecord);
+        return newRecord;
     }
 
     async update(patch: Partial<T>) {
@@ -33,7 +33,7 @@ export class InMemoryRepo<T extends { id: number }> implements IRepo<T> {
     }
 
     async delete(id: number) {
-        this.data.splice(Number(id), 1);
+        this.records.splice(Number(id), 1);
     }
 }
 
@@ -52,8 +52,8 @@ export function zedr(options: { repository: IRepo; schema: z.ZodObject<any, any,
 
     router.get('/', async (req, res) => {
         try {
-            const entries = await options.repository.retrieveAll();
-            res.status(200).send(entries);
+            const records = await options.repository.retrieveAll();
+            res.status(200).send(records);
         } catch (e) {
             res.status(500).send({ message: _.get(e, 'message', 'Unknown Error') });
         }
@@ -62,11 +62,11 @@ export function zedr(options: { repository: IRepo; schema: z.ZodObject<any, any,
     router.get('/:id', async (req, res) => {
         const id = Number(req.params.id);
         try {
-            const entry = await options.repository.retrieveOne(id);
-            if (!entry) {
+            const record = await options.repository.retrieveOne(id);
+            if (!record) {
                 res.status(404).send({ message: 'Not Found' });
             }
-            res.status(200).send(entry);
+            res.status(200).send(record);
         } catch (e) {
             res.status(500).send({ message: _.get(e, 'message', 'Unknown Error') });
         }

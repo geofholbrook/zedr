@@ -1,7 +1,7 @@
 import express from 'express';
 import { InMemoryRepo, zedr } from '../src';
-import supertest from 'supertest';
 import z from 'zod';
+import supertest from 'supertest';
 
 describe('basic functionality (in-memory storage)', () => {
     const app = express();
