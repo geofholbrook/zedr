@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest --forceExit",
-    "format": ""
+    "format": "echo 'no formatter implemented'"
   },
   "author": "Geof Holbrook",
   "license": "ISC",
