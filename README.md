@@ -1,6 +1,6 @@
 # ZEDR
 
-NPM package for CRUD routes! For the moment, using zod, express, and in-memory storage only. 
+NPM package for CRUD routes! For the moment, using zod, express, and in-memory storage only.
 
 ## usage
 
@@ -20,20 +20,22 @@ const schema = z.object({
     age: z.number()
 })
 
+// make a place to put the records
+const repository: new InMemoryRepo();
+
 // make your express app
 const app = express();
 
-
-
-
+// add the routes, presto!
+app.use('/people', zedr({repository, schema}));
 ```
 
 ## Roadmap
 
-* support for 
-    * other server frameworks
-    * other persistence models 
-        * SQL
-        * file system
-    * other validators
-        * ajv
+-   support for
+    -   other server frameworks
+    -   other persistence models
+        -   SQL
+        -   file system
+    -   other validators
+        -   ajv
