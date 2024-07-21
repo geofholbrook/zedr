@@ -1,5 +1,6 @@
 import express from 'express';
-import { InMemoryRepo, zedr } from '../src';
+import { zedr } from '../src';
+import { InMemoryRepo } from '../src/persistence-models/InMemoryRepo';
 import z from 'zod';
 import supertest from 'supertest';
 
